@@ -28,6 +28,7 @@ DATA_IMAGES = ['MNIST', 'MNIST_SUPERPIXEL', 'CIFAR10']
 str2bool = lambda x: x.lower() == "true"
 parser = argparse.ArgumentParser()
 parser.add_argument('--exp', type=str, default="test")
+parser.add_argument('--data_root', type=str, default="data")
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--lr', type=float, default=0.001)
@@ -154,7 +155,8 @@ def run_exp_lib(dataset_feat_net_triples,
         print('-----\n{}/{} - {} - {} - {}'.format(
             exp_id+1, exp_nums, dataset_name, feat_str, net))
         sys.stdout.flush()
-        dataset = get_dataset(dataset_name, sparse=True, feat_str=feat_str)
+        dataset = get_dataset(
+            dataset_name, sparse=True, feat_str=feat_str, root=args.data_root)
         model_func = get_model(net)
         if 'MNIST' in dataset_name or 'CIFAR' in dataset_name:
             train_dataset, test_dataset = dataset

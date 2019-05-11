@@ -10,8 +10,11 @@ from image_dataset import ImageDataset
 from tu_dataset import TUDatasetExt
 
 
-def get_dataset(name, sparse=True, feat_str="deg+ak3+reall"):
-    path = osp.join(osp.expanduser('~'), 'pyG_data', name)
+def get_dataset(name, sparse=True, feat_str="deg+ak3+reall", root=None):
+    if root is None or root == '':
+        path = osp.join(osp.expanduser('~'), 'pyG_data', name)
+    else:
+        path = osp.join(root, name)
     degree = feat_str.find("deg") >= 0
     onehot_maxdeg = re.findall("odeg(\d+)", feat_str)
     onehot_maxdeg = int(onehot_maxdeg[0]) if onehot_maxdeg else None
