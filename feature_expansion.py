@@ -1,8 +1,9 @@
 import torch
+import torch.nn.functional as F
 import networkx as nx
 from torch_geometric.nn.conv import MessagePassing
 from torch_scatter import scatter_add
-from torch_geometric.utils import degree, one_hot
+from torch_geometric.utils import degree
 from torch_geometric.utils import remove_self_loops, add_self_loops
 
 class FeatureExpander(MessagePassing):
@@ -82,9 +83,10 @@ class FeatureExpander(MessagePassing):
 
         if self.onehot_maxdeg is not None and self.onehot_maxdeg > 0:
             max_deg = torch.tensor(self.onehot_maxdeg, dtype=deg.dtype)
-            deg_capped = torch.min(deg, max_deg)
-            deg_onehot = one_hot(
-                deg_capped, num_classes=self.onehot_maxdeg + 1)
+            deg_capped = torch.min(deg, max_deg).type(torch.int64)
+            deg_onehot = F.one_hot(
+                deg_capped.view(-1), num_classes=self.onehot_maxdeg + 1)
+            deg_onehot = deg_onehot.type(deg.dtype)
         else:
             deg_onehot = self.empty_feature(num_nodes)
 
@@ -133,7 +135,8 @@ class FeatureExpander(MessagePassing):
         assert edge_weight.size(0) == edge_index.size(1)
 
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
-        edge_index = add_self_loops(edge_index, num_nodes)
+        edge_index, _ = add_self_loops(edge_index, num_nodes=num_nodes)
+        # Add edge_weight for loop edges.
         loop_weight = torch.full((num_nodes, ),
                                  diag_val,
                                  dtype=edge_weight.dtype,

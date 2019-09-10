@@ -79,7 +79,8 @@ class GCNConv(MessagePassing):
         assert edge_weight.size(0) == edge_index.size(1)
 
         edge_index, edge_weight = remove_self_loops(edge_index, edge_weight)
-        edge_index = add_self_loops(edge_index, num_nodes)
+        edge_index, _ = add_self_loops(edge_index, num_nodes=num_nodes)
+        # Add edge_weight for loop edges.
         loop_weight = torch.full((num_nodes, ),
                                  1 if not improved else 2,
                                  dtype=edge_weight.dtype,
