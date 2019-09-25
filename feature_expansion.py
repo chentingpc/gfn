@@ -16,17 +16,22 @@ class FeatureExpander(MessagePassing):
         AK (int): whether to use a^kx feature. disabled with 0.
         centrality (bool): whether to use centrality feature.
         remove_edges (strings): whether to remove edges, partially or totally.
+        edge_noises_add (float): adding random edges (in ratio of current edges).
+        edge_noises_delete (float): remove random ratio of edges.
         group_degree (int): group nodes to create super nodes, set 0 to disable.
     """
 
     def __init__(self, degree=True, onehot_maxdeg=0, AK=1,
-                 centrality=False, remove_edges="none", group_degree=0):
+                 centrality=False, remove_edges="none",
+                 edge_noises_add=0, edge_noises_delete=0, group_degree=0):
         super(FeatureExpander, self).__init__('add', 'source_to_target')
         self.degree = degree
         self.onehot_maxdeg = onehot_maxdeg
         self.AK = AK
         self.centrality = centrality
         self.remove_edges = remove_edges
+        self.edge_noises_add = edge_noises_add
+        self.edge_noises_delete = edge_noises_delete
         self.group_degree = group_degree
         assert remove_edges in ["none", "nonself", "all"], remove_edges
 
@@ -35,6 +40,18 @@ class FeatureExpander(MessagePassing):
     def transform(self, data):
         if data.x is None:
           data.x = torch.ones([data.num_nodes, 1], dtype=torch.float)
+
+        # Adding noises to edges before computing anything else.
+        if self.edge_noises_delete > 0:
+            num_edges_new = data.num_edges - int(
+                data.num_edges * self.edge_noises_delete)
+            idxs = torch.randperm(data.num_edges)[:num_edges_new]
+            data.edge_index = data.edge_index[:, idxs]
+        if self.edge_noises_add > 0:
+            num_new_edges = int(data.num_edges * self.edge_noises_add)
+            idx = torch.LongTensor(num_new_edges * 2).random_(0, data.num_nodes)
+            new_edges = idx.reshape(2, -1)
+            data.edge_index = torch.cat([data.edge_index, new_edges], 1)
 
         deg, deg_onehot = self.compute_degree(data.edge_index, data.num_nodes)
         akx = self.compute_akx(data.num_nodes, data.x, data.edge_index)

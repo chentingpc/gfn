@@ -24,12 +24,18 @@ def get_dataset(name, sparse=True, feat_str="deg+ak3+reall", root=None):
     groupd = int(groupd[0]) if groupd else 0
     remove_edges = re.findall("re(\w+)", feat_str)
     remove_edges = remove_edges[0] if remove_edges else 'none'
+    edge_noises_add = re.findall("randa([\d\.]+)", feat_str)
+    edge_noises_add = float(edge_noises_add[0]) if edge_noises_add else 0
+    edge_noises_delete = re.findall("randd([\d\.]+)", feat_str)
+    edge_noises_delete = float(
+        edge_noises_delete[0]) if edge_noises_delete else 0
     centrality = feat_str.find("cent") >= 0
     coord = feat_str.find("coord") >= 0
 
     pre_transform = FeatureExpander(
         degree=degree, onehot_maxdeg=onehot_maxdeg, AK=k,
         centrality=centrality, remove_edges=remove_edges,
+        edge_noises_add=edge_noises_add, edge_noises_delete=edge_noises_delete,
         group_degree=groupd).transform
 
     if 'MNIST' in name or 'CIFAR' in name:

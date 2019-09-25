@@ -270,6 +270,20 @@ def run_exp_benchmark():
                                         dd_odeg10_ak1=True))
 
 
+def run_exp_noises():
+    # Run GFN, GCN
+    print('[INFO] running noises experiments..')
+    datasets = DATA_BIO + DATA_SOCIAL
+    # feat_strs = ['deg+odeg100+randd0.%d'%d for d in range(10)]  # Randomly delete edges
+    # feat_strs = ['deg+odeg100+randa%f'%f for f in [0, 0.5, 1.0, 2.0, 5.0, 10.0]]  # Randomly add edges
+    feat_strs = ['deg+odeg100+randa%f+randd%f'%(f, f) for f in [0, 0.2, 0.4, 0.6, 0.8, 1.0]]  # Randomly add/delete edges
+    nets = ['ResGFN', 'ResGCN']
+    run_exp_lib(create_n_filter_triples(datasets, feat_strs, nets,
+                                        gfn_add_ak3=True,
+                                        reddit_odeg10=True,
+                                        dd_odeg10_ak1=True))
+
+
 def run_exp_image(nets=['ResGCN'], feat_strs=['none'], datasets=['MNIST']):
     # Test num layers for GFN
     nets_new = []
@@ -293,6 +307,8 @@ if __name__ == '__main__':
         run_exp_single_test()
     elif args.exp == 'benchmark':
         run_exp_benchmark()
+    elif args.exp == 'noises':
+        run_exp_noises()
     elif args.exp == 'image_gcn':
         run_exp_image(nets=['ResGCN'], feat_strs=['none'])
     elif args.exp == 'image_gfn':
