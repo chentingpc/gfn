@@ -23,7 +23,7 @@ Please cite [our paper](https://arxiv.org/abs/1905.04579) if you find it helpful
 
 ```
 @article{gfn2019,
-  title={Dissecting Graph Neural Networks on Graph Classification},
+  title={Are Powerful Graph Neural Nets Necessary? A Dissection on Graph Classification},
   author={Ting Chen, Song Bian, Yizhou Sun}
   journal={CoRR},
   volume={abs/1905.04579},
