@@ -1,7 +1,7 @@
 Graph Feature Networks (GFN)
 ================================================================================
 
-This is the implementation of GFN used in paper "Dissecting Graph Neural Networks on Graph Classification". GFN is a simple lightweight neural set function with graph augmented features. It augments nodes with graph structural and propagated features, and then defines the function directly on a set of nodes. See [our paper](https://arxiv.org/abs/1905.04579)  for more details.
+This is the implementation of GFN used in paper "Are Powerful Graph Neural Nets Necessary? A Dissection on Graph Classification", previously titled "Dissecting Graph Neural Networks on Graph Classification". GFN is a simple lightweight neural set function with graph augmented features. It augments nodes with graph structural and propagated features, and then defines the function directly on a set of nodes. See [our paper](https://arxiv.org/abs/1905.04579)  for more details.
 
 ## Requirements
 
